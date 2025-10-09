@@ -205,5 +205,3 @@ hook.Add("Think", "ADS_CleanupOldAirdrops", function()
     end
 end)
 
-print("[ADS] Серверная часть плагина Airdrop System загружена")
-

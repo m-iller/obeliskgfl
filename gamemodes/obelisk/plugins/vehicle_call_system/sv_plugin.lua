@@ -24,8 +24,6 @@ function PLUGIN:OnLoaded()
     if not ix.data.Get("vcs_vehicle_logs", nil) then
         ix.data.Set("vcs_vehicle_logs", {})
     end
-    
-    print("[VCS] Плагин Vehicle Call System загружен. Терминалы могут быть размещены администраторами через Persistent.")
 end
 
 -- Загрузка позиций спавна из файлов
@@ -65,8 +63,6 @@ function PLUGIN:LoadSpawnPositions()
         print("[VCS] Создаем тестовую позицию наземной техники")
         self:AddSpawnPosition("ground", Vector(0, 0, 0), Angle(0, 0, 0), "Тестовая наземная позиция")
     end
-    
-    print("[VCS] Загружено позиций спавна: " .. #self.spawnPositions.air .. " воздушных, " .. #self.spawnPositions.ground .. " наземных")
 end
 
 -- Добавление позиции спавна

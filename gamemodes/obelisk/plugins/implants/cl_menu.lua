@@ -2,6 +2,17 @@
 if CLIENT then
     local PANEL = {}
     
+    -- Обработчик получения данных об имплантах
+    net.Receive("ixImplantsGetData", function()
+        local targetPlayer = net.ReadEntity()
+        local implants = net.ReadTable()
+        
+        -- Обновляем панель имплантов если она открыта
+        if IsValid(ix.gui.implants) then
+            ix.gui.implants:UpdateImplantsList(targetPlayer, implants)
+        end
+    end)
+    
     function PANEL:Init()
         self:SetTitle("Система имплантов")
         self:SetSize(600, 500)
@@ -93,6 +104,15 @@ if CLIENT then
             self:RemoveImplant()
         end
         
+        self.refreshButton = self.buttonPanel:Add("DButton")
+        self.refreshButton:SetText("Обновить")
+        self.refreshButton:Dock(RIGHT)
+        self.refreshButton:DockMargin(0, 0, 5, 0)
+        self.refreshButton:SetWide(100)
+        self.refreshButton.DoClick = function()
+            self:RefreshImplants()
+        end
+        
         self.closeButton = self.buttonPanel:Add("DButton")
         self.closeButton:SetText("Закрыть")
         self.closeButton:Dock(RIGHT)
@@ -101,9 +121,25 @@ if CLIENT then
             self:Close()
         end
         
+        -- Панель для отображения установленных имплантов
+        self.installedImplantsPanel = self:Add("DPanel")
+        self.installedImplantsPanel:Dock(FILL)
+        self.installedImplantsPanel:DockMargin(5, 5, 5, 5)
+        
+        local installedLabel = self.installedImplantsPanel:Add("DLabel")
+        installedLabel:SetText("Установленные импланты:")
+        installedLabel:Dock(TOP)
+        installedLabel:SetContentAlignment(5)
+        installedLabel:SetTall(20)
+        
+        self.installedImplantsList = self.installedImplantsPanel:Add("DScrollPanel")
+        self.installedImplantsList:Dock(FILL)
+        self.installedImplantsList:DockMargin(0, 5, 0, 0)
+        
         -- Информационная панель
         self.infoPanel = self:Add("DPanel")
-        self.infoPanel:Dock(FILL)
+        self.infoPanel:Dock(BOTTOM)
+        self.infoPanel:SetTall(60)
         self.infoPanel:DockMargin(5, 5, 5, 5)
         
         self.infoLabel = self.infoPanel:Add("DLabel")
@@ -112,9 +148,27 @@ if CLIENT then
         self.infoLabel:SetContentAlignment(5)
         self.infoLabel:SetWrap(true)
         
+        -- Панель для отображения информации об импланте
+        self.implantInfoPanel = self:Add("DPanel")
+        self.implantInfoPanel:Dock(BOTTOM)
+        self.implantInfoPanel:SetTall(100)
+        self.implantInfoPanel:DockMargin(5, 5, 5, 5)
+        self.implantInfoPanel:SetVisible(false)
+        
+        self.implantInfoLabel = self.implantInfoPanel:Add("DLabel")
+        self.implantInfoLabel:Dock(FILL)
+        self.implantInfoLabel:SetText("")
+        self.implantInfoLabel:SetContentAlignment(7)
+        self.implantInfoLabel:SetWrap(true)
+        
         -- Обновляем список имплантов при выборе конечности
         self.limbCombo.OnSelect = function(panel, index, value, data)
             self:UpdateImplantList(data)
+        end
+        
+        -- Обновляем информацию об импланте при его выборе
+        self.implantCombo.OnSelect = function(panel, index, value, data)
+            self:UpdateImplantInfo(data)
         end
     end
     
@@ -132,6 +186,36 @@ if CLIENT then
                 self.implantCombo:AddChoice(implantName, implantName)
             end
         end
+    end
+    
+    function PANEL:UpdateImplantInfo(implantName)
+        if implantName == "НЕТ" then
+            self.implantInfoPanel:SetVisible(false)
+            return
+        end
+        
+        local implantData = ix.configs.implants[implantName]
+        if not implantData then
+            self.implantInfoPanel:SetVisible(false)
+            return
+        end
+        
+        self.implantInfoPanel:SetVisible(true)
+        
+        local infoText = "Описание: " .. (implantData.description or "Нет описания") .. "\n\n"
+        
+        -- Показываем бонусы
+        local bonuses = implantData.bonuses or (implantData.bonus and {implantData.bonus}) or {}
+        if #bonuses > 0 then
+            infoText = infoText .. "Бонусы:\n"
+            for i, bonus in ipairs(bonuses) do
+                infoText = infoText .. "• " .. bonus .. "\n"
+            end
+        else
+            infoText = infoText .. "Бонусы: Нет"
+        end
+        
+        self.implantInfoLabel:SetText(infoText)
     end
     
     function PANEL:ApplyImplant()
@@ -171,6 +255,81 @@ if CLIENT then
         net.SendToServer()
         
         self.infoLabel:SetText("Имплант удален с " .. selectedLimb .. " у " .. selectedPlayer:GetCharacter():GetName())
+    end
+    
+    function PANEL:RefreshImplants()
+        local selectedPlayer = self.playerCombo:GetOptionData(self.playerCombo:GetSelectedID())
+        
+        if not selectedPlayer then
+            self.infoLabel:SetText("Пожалуйста, выберите игрока!")
+            return
+        end
+        
+        -- Запрашиваем данные об имплантах с сервера
+        net.Start("ixImplantsGetData")
+        net.WriteEntity(selectedPlayer)
+        net.SendToServer()
+        
+        self.infoLabel:SetText("Загружаем импланты...")
+    end
+    
+    function PANEL:UpdateImplantsList(targetPlayer, implants)
+        -- Очищаем список
+        self.installedImplantsList:Clear()
+        
+        if not implants or table.IsEmpty(implants) then
+            local noImplantsLabel = self.installedImplantsList:Add("DLabel")
+            noImplantsLabel:SetText("У игрока нет установленных имплантов")
+            noImplantsLabel:Dock(TOP)
+            noImplantsLabel:SetContentAlignment(5)
+            noImplantsLabel:SetTall(30)
+            return
+        end
+        
+        -- Добавляем каждый имплант в список
+        for limb, implant in pairs(implants) do
+            if implant and implant ~= "НЕТ" then
+                local implantPanel = self.installedImplantsList:Add("DPanel")
+                implantPanel:Dock(TOP)
+                implantPanel:SetTall(40)
+                implantPanel:DockMargin(0, 2, 0, 2)
+                implantPanel.Paint = function(self, w, h)
+                    draw.RoundedBox(4, 0, 0, w, h, Color(50, 50, 50, 200))
+                    draw.RoundedBox(4, 1, 1, w-2, h-2, Color(70, 70, 70, 150))
+                end
+                
+                local implantLabel = implantPanel:Add("DLabel")
+                implantLabel:SetText(limb .. ": " .. implant)
+                implantLabel:Dock(FILL)
+                implantLabel:SetContentAlignment(4)
+                implantLabel:DockMargin(10, 0, 0, 0)
+                
+                -- Кнопка для удаления импланта
+                local removeBtn = implantPanel:Add("DButton")
+                removeBtn:SetText("Удалить")
+                removeBtn:Dock(RIGHT)
+                removeBtn:SetWide(80)
+                removeBtn:DockMargin(0, 5, 5, 5)
+                removeBtn.DoClick = function()
+                    -- Устанавливаем выбранного игрока и конечность
+                    self.playerCombo:ChooseOption(targetPlayer:GetCharacter():GetName(), targetPlayer)
+                    self.limbCombo:ChooseOption(limb, limb)
+                    self.implantCombo:ChooseOption("НЕТ", "НЕТ")
+                    
+                    -- Удаляем имплант
+                    self:RemoveImplant()
+                end
+            end
+        end
+        
+        self.infoLabel:SetText("Импланты загружены для " .. targetPlayer:GetCharacter():GetName())
+    end
+    
+    function PANEL:OnClose()
+        -- Очищаем ссылку на панель при закрытии
+        if ix.gui.implants == self then
+            ix.gui.implants = nil
+        end
     end
     
     vgui.Register("ixImplantsMenu", PANEL, "DFrame")

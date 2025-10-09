@@ -1,6 +1,7 @@
 PLUGIN.name = "Spawn Menu: Items"; 
 PLUGIN.author = "Rune Knight";
 PLUGIN.description = "Adds a tab to the spawn menu which players can use to spawn items.";
+PLUGIN.version = "1.0.0"
 PLUGIN.license = [[Copyright 2021 Rune Knight
 
 This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.]];
@@ -146,4 +147,10 @@ else
 		
 	end );
 
+end
+
+if SERVER then
+    MsgC(Color(0, 180, 255), "[OBL_Plugins] ", Color(255,255,255), "Плагин ", Color(0,180,255), PLUGIN.name, Color(255,255,255), " успешно загружен! ", Color(0,255,0), "Версия " .. PLUGIN.version .. "\n")
+else
+    MsgC(Color(0, 180, 255), "[OBL_Plugins] ", Color(255,255,255), "Плагин ", Color(0,180,255), PLUGIN.name, Color(255,255,255), " успешно загружен на клиенте! ", Color(0,255,0), "Версия " .. PLUGIN.version .. "\n")
 end

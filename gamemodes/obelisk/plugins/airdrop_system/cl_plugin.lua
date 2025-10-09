@@ -469,5 +469,3 @@ net.Receive("ADS_OpenTerminal", function()
     CreateTerminalUI(faction)
 end)
 
-print("[ADS] Клиентская часть плагина Airdrop System загружена")
-
