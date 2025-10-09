@@ -2,6 +2,7 @@ PLUGIN.name = "Airdrop System"
 PLUGIN.uniqueID = "airdrop_system"
 PLUGIN.author = "kido" 
 PLUGIN.description = "Система вызова аирдропов для фракций с терминалами"
+PLUGIN.version = "1.0.0"
 
 -- Регистрируем флаг A для доступа к системе аирдропов
 ix.flag.Add("A", "Доступ к системе аирдропов", nil, true)
@@ -153,4 +154,10 @@ function PLUGIN:GetAvailableAirdropsForPlayer(player, factionKey)
     -- Возвращаем все доступные аирдропы фракции
     return factionConfig.airdrops or {}
 end 
+
+if SERVER then
+    MsgC(Color(0, 180, 255), "[OBL_Plugins] ", Color(255,255,255), "Плагин ", Color(0,180,255), PLUGIN.name, Color(255,255,255), " успешно загружен! ", Color(0,255,0), "Версия " .. PLUGIN.version .. "\n")
+else
+    MsgC(Color(0, 180, 255), "[OBL_Plugins] ", Color(255,255,255), "Плагин ", Color(0,180,255), PLUGIN.name, Color(255,255,255), " успешно загружен на клиенте! ", Color(0,255,0), "Версия " .. PLUGIN.version .. "\n")
+end
 

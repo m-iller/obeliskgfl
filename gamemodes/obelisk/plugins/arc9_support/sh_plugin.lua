@@ -2,6 +2,7 @@
 PLUGIN.name = "ARC9 Support"
 PLUGIN.description = "Adds support for ARC9 attachments and weapons in an immersive way."
 PLUGIN.author = "bruck"
+PLUGIN.version = "1.0.0"
 PLUGIN.specialThanks = "Adik, Hayter, FoxxoTrystan; a lot of my work wouldn't have been possible without the ability to reference theirs :); Darsu, for helping me debug some base-specific issues."
 PLUGIN.license = [[
 Copyright 2025 bruck
@@ -41,4 +42,10 @@ function PLUGIN:OnLoaded()
         -- april fools debugging was fun
         GetConVar("arc9_cruelty_reload"):SetInt(0)
     end
+end
+
+if SERVER then
+    MsgC(Color(0, 180, 255), "[OBL_Plugins] ", Color(255,255,255), "Плагин ", Color(0,180,255), PLUGIN.name, Color(255,255,255), " успешно загружен! ", Color(0,255,0), "Версия " .. PLUGIN.version .. "\n")
+else
+    MsgC(Color(0, 180, 255), "[OBL_Plugins] ", Color(255,255,255), "Плагин ", Color(0,180,255), PLUGIN.name, Color(255,255,255), " успешно загружен на клиенте! ", Color(0,255,0), "Версия " .. PLUGIN.version .. "\n")
 end

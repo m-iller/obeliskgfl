@@ -3,6 +3,7 @@ local PLUGIN = PLUGIN
 PLUGIN.name = "Get Position"
 PLUGIN.author = "kido"
 PLUGIN.description = "Выводит позицию и углы объектов, на которые смотрит игрок"
+PLUGIN.version = "1.0.0"
 
 if SERVER then
 	-- Консольная команда для получения позиции объекта
@@ -96,4 +97,10 @@ end
 
 if SERVER then
 	util.AddNetworkString("ixGetPosCopy")
+end
+
+if SERVER then
+    MsgC(Color(0, 180, 255), "[OBL_Plugins] ", Color(255,255,255), "Плагин ", Color(0,180,255), PLUGIN.name, Color(255,255,255), " успешно загружен! ", Color(0,255,0), "Версия " .. PLUGIN.version .. "\n")
+else
+    MsgC(Color(0, 180, 255), "[OBL_Plugins] ", Color(255,255,255), "Плагин ", Color(0,180,255), PLUGIN.name, Color(255,255,255), " успешно загружен на клиенте! ", Color(0,255,0), "Версия " .. PLUGIN.version .. "\n")
 end
