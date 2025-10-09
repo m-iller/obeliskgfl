@@ -44,11 +44,22 @@ if SERVER then
             local playerFactionTable = playerFactionID and ix.faction.Get(playerFactionID)
             local playerFactionName = playerFactionTable and playerFactionTable.name or "Неизвестная"
             
-            caller:Notify("Доступ запрещён: требуется фракция " .. (factionConfig.name or factionKey))
-            local denyMsg = caller:GetName() .. " (" .. playerFactionName .. ") пытается использовать терминал аирдропов, но система отказывает в доступе."
-            for _, v in pairs(player.GetAll()) do
-                if v:GetPos():Distance(caller:GetPos()) <= 200 then
-                    v:Notify(denyMsg)
+            -- Проверяем, есть ли у игрока флаг A
+            if (not character) or (not character:HasFlags("A")) then
+                caller:Notify("Доступ запрещён: требуется флаг A")
+                local denyMsg = caller:GetName() .. " (" .. playerFactionName .. ") пытается использовать терминал аирдропов, но не имеет флага A."
+                for _, v in pairs(player.GetAll()) do
+                    if v:GetPos():Distance(caller:GetPos()) <= 200 then
+                        v:Notify(denyMsg)
+                    end
+                end
+            else
+                caller:Notify("Доступ запрещён: требуется фракция " .. (factionConfig.name or factionKey))
+                local denyMsg = caller:GetName() .. " (" .. playerFactionName .. ") пытается использовать терминал аирдропов, но система отказывает в доступе."
+                for _, v in pairs(player.GetAll()) do
+                    if v:GetPos():Distance(caller:GetPos()) <= 200 then
+                        v:Notify(denyMsg)
+                    end
                 end
             end
             return
@@ -70,12 +81,6 @@ if SERVER then
         -- Уведомляем окружающих
         local plyName = caller:GetName()
         local message = plyName .. " подключается к терминалу вызова аирдропов (" .. (factionConfig.name or factionKey) .. ")."
-        
-        for k, v in pairs(player.GetAll()) do
-            if v:GetPos():Distance(caller:GetPos()) <= 200 then
-                v:Notify(message)
-            end
-        end
         
         timer.Simple(3, function()
             if IsValid(caller) and caller:GetPos():Distance(self:GetPos()) <= 100 then
