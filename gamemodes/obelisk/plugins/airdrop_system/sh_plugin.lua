@@ -3,6 +3,9 @@ PLUGIN.uniqueID = "airdrop_system"
 PLUGIN.author = "kido" 
 PLUGIN.description = "Система вызова аирдропов для фракций с терминалами"
 
+-- Регистрируем флаг A для доступа к системе аирдропов
+ix.flag.Add("A", "Доступ к системе аирдропов", nil, true)
+
 ix.util.Include("sv_plugin.lua")
 ix.util.Include("cl_plugin.lua")
 
@@ -104,7 +107,7 @@ end
 -- Функция для проверки доступа игрока к аирдропам фракции
 function PLUGIN:CanPlayerAccessFaction(player, factionKey)
     local character = player:GetCharacter()
-    if not character then
+    if (not character) or (not character:HasFlags("A")) then
         return false
     end
     
