@@ -1,0 +1,8 @@
+
+"skeleton"
+{
+	"base" 			"helix"
+	"title" 		"Obelisk Project 1"
+	"author" 		"ObeliskStdDev"
+	"menusystem"	"1"
+}
