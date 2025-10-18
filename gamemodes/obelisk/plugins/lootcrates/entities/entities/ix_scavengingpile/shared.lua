@@ -1,6 +1,6 @@
 ENT.Type = "anim";
-ENT.PrintName = "Scavenging Object";
-ENT.Category = "HL2 RP";
+ENT.PrintName = "Loot Object";
+ENT.Category = "Helix";
 ENT.Spawnable = true;
 ENT.AdminOnly = true;
 ENT.PhysgunDisable = false;

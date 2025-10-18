@@ -9,9 +9,6 @@ ix.configs.implantLimbs = {
     "ноги"
 }
 
--- Команда для открытия меню имплантов
-ix.configs.implantCommand = "implants"
-
 ix.configs.implants = {
     ["Пружинные суставы"] = {
         description = "Увеличивает скорость бега и прыжков",

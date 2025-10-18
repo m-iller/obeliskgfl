@@ -5,9 +5,26 @@ PLUGIN.version = "1.0.0"
 
 -- Конфиг теперь находится в схеме
 
--- Консольная команда для открытия меню имплантов
+ix.flag.Add("I", "Доступ к системе имплантов", nil, true)
+
+-- Чат-команда для открытия меню имплантов
+if SERVER then
+    ix.command.Add("implants", {
+        description = "Открыть меню имплантов",
+        OnRun = function(self, client)
+            if client:GetCharacter():HasFlags("I") then
+                net.Start("ixImplantsOpenMenu")
+                net.Send(client)
+            else
+                client:Notify("У вас нет доступа к этой команде")
+            end
+        end
+    })
+end
+
 if CLIENT then
-    concommand.Add(ix.configs.implantCommand or "implants", function(client, cmd, args)
+    -- Обработчик сетевого сообщения для открытия меню
+    net.Receive("ixImplantsOpenMenu", function()
         -- Проверяем, существует ли панель и валидна ли она
         if not IsValid(ix.gui.implants) then
             ix.gui.implants = vgui.Create("ixImplantsMenu")
