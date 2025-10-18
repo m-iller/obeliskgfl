@@ -8,7 +8,6 @@ PLUGIN.version = "1.0.0"
 ix.flag.Add("I", "Доступ к системе имплантов", nil, true)
 
 -- Чат-команда для открытия меню имплантов
-if SERVER then
     ix.command.Add("implants", {
         description = "Открыть меню имплантов",
         OnRun = function(self, client)
@@ -20,7 +19,6 @@ if SERVER then
             end
         end
     })
-end
 
 if CLIENT then
     -- Обработчик сетевого сообщения для открытия меню
