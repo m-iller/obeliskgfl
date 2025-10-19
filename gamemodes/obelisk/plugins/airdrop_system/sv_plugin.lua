@@ -35,11 +35,12 @@ function PLUGIN:CreateAirdrop(airdropType, position, faction, spawner)
     airdrop:SetAngles(Angle(0, 0, 0))
     airdrop:Spawn()
     airdrop:Activate()
-    
-    -- Устанавливаем владельца
-    if IsValid(spawner) then
-        airdrop.Owner = spawner
-    end
+    airdrop:SetVar(1, 22)
+    airdrop:SetBodygroup(1,1)
+    airdrop.Broken = false
+    airdrop.Smoking = false
+    airdrop.SmokeAmount = 100
+    airdrop.Owner = spawner
     
     -- Добавляем в активные аирдропы
     self:AddActiveAirdrop(airdrop, airdropType, spawner, position, faction)
