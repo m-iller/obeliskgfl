@@ -4,9 +4,7 @@ if SERVER then
     util.AddNetworkString("ixImplantsOpenMenu")
     util.AddNetworkString("ixImplantsGetData")
     
-    net.Receive("ixImplantsApply", function(len, client)
-        if not client:IsAdmin() then return end
-        
+    net.Receive("ixImplantsApply", function(len, client)        
         local targetPlayer = net.ReadEntity()
         local limb = net.ReadString()
         local implant = net.ReadString()
@@ -18,19 +16,6 @@ if SERVER then
         
         -- Устанавливаем имплант
         ix.SetCharacterImplant(targetPlayer:GetCharacter(), limb, implant)
-        
-        local message = ""
-        if implant == "НЕТ" then
-            message = "Имплант удален с " .. limb .. " у " .. targetPlayer:GetCharacter():GetName()
-            -- Вызываем хук для удаления импланта
-            hook.Run("ImplantRemoved", targetPlayer:GetCharacter(), limb)
-        else
-            message = "Имплант " .. implant .. " установлен в " .. limb .. " для " .. targetPlayer:GetCharacter():GetName()
-            -- Вызываем хук для установки импланта
-            hook.Run("ImplantInstalled", targetPlayer:GetCharacter(), limb, implant)
-        end
-        
-        client:Notify(message)
         targetPlayer:Notify("Вам " .. (implant == "НЕТ" and "удален имплант с" or "установлен имплант в") .. " " .. limb)
     end)
     

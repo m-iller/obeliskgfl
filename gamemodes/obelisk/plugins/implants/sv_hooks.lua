@@ -46,4 +46,17 @@ if SERVER then
             end
         end
     end)
+
+     -- Хук для применения эффектов имплантов при загрузке персонажа
+     hook.Add("PlayerSpawn", "ixImplantsApplyOnLoad", function(ply)
+        local character = ply:GetCharacter()
+        
+        local implants = ix.GetCharacterImplants(character)
+        
+        for limb, implant in pairs(implants) do
+            if implant ~= "НЕТ" then
+                ix.SetCharacterImplant(character, limb, implant)
+            end
+        end
+     end)
 end
