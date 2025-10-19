@@ -1,7 +1,7 @@
 PLUGIN.name = "Implants System"
 PLUGIN.description = "Система имплантов с админским меню"
 PLUGIN.author = "ObeliskStdDev"
-PLUGIN.version = "1.0.0"
+PLUGIN.version = "1.0.1"
 
 -- Конфиг теперь находится в схеме
 
@@ -103,35 +103,7 @@ function ix.SetCharacterImplant(character, limb, implant)
 end
 
 -- Применяем бонусы имплантов при спавне персонажа
-if SERVER then
-    hook.Add("PlayerSpawn", "ixImplantsApplyBonuses", function(client)
-        if not client:GetCharacter() then return end
-        
-        local character = client:GetCharacter()
-        local implants = ix.GetCharacterImplants(character)
-        
-        for limb, implant in pairs(implants) do
-            if implant and implant ~= "НЕТ" then
-                local implantData = ix.configs.implants[implant]
-                if implantData then
-                    -- Поддерживаем как старый формат (bonus), так и новый (bonuses)
-                    local bonuses = implantData.bonuses or (implantData.bonus and {implantData.bonus}) or {}
-                    
-                    -- Применяем все бонусы импланта
-                    for _, bonus in ipairs(bonuses) do
-                        print("[Implants] Применяем бонус (при спавне):", bonus, "для импланта:", implant, "на конечность:", limb)
-                        hook.Run("ImplantBonusApplied", character, limb, implant, bonus)
-                    end
-                end
-            end
-        end
-    end)
-    
-    -- Применяем бонусы имплантов при создании персонажа
-    hook.Add("OnCharacterCreated", "ixImplantsApplyBonusesOnCreate", function(client, character)
-        -- Импланты будут применены при первом спавне
-    end)
-    
+if SERVER then  
     -- Функция для удаления всех бонусов импланта
     function ix.RemoveImplantBonuses(character, limb, implant)
         local implantData = ix.configs.implants[implant]
